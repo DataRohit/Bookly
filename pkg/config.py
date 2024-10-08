@@ -16,11 +16,13 @@ class Settings(BaseSettings):
     MAIL_PASSWORD: str = Field(..., env="MAIL_PASSWORD")
     MAIL_SERVER: str = Field(..., env="MAIL_SERVER")
     MAIL_PORT: int = Field(..., env="MAIL_PORT")
-
     MAIL_FROM: str = Field(..., env="MAIL_FROM")
 
     JWT_SECRET: str = Field(..., env="JWT_SECRET")
+    JWT_SALT: str = Field(..., env="JWT_SALT")
     JWT_ALGORITHM: str = Field(..., env="JWT_ALGORITHM")
+
+    DOMAIN: str = Field(..., env="DOMAIN")
 
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
