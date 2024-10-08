@@ -1,9 +1,26 @@
 services:
+  backend:
+    build:
+      context: .
+      dockerfile: ./compose/backend/Dockerfile
+    container_name: backend
+    image: backend:latest
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app:z
+    env_file:
+      - ./.envs/.backend.env
+    command: /start
+    networks:
+      - bookly-backend-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+
   postgres:
     image: postgres:16
     container_name: postgres
-    ports:
-      - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     env_file:
