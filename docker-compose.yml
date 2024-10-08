@@ -21,8 +21,6 @@ services:
   postgres:
     image: postgres:16
     container_name: postgres
-    ports:
-      - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     env_file:
@@ -36,9 +34,22 @@ services:
       start_period: 10s
       timeout: 10s
 
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: mailpit
+    ports:
+      - "8025:8025"
+    volumes:
+      - mailpit_data:/data
+    env_file:
+      - ./.envs/.mailpit.env
+    networks:
+      - backend_network
+
 networks:
   backend_network:
     driver: bridge
 
 volumes:
   postgres_data:
+  mailpit_data:

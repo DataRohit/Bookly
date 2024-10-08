@@ -12,6 +12,11 @@ class Settings(BaseSettings):
 
     BCRYPT_ROUND: int = Field(..., env="BCRYPT_ROUND")
 
+    MAILPIT_USER: str = Field(..., env="MAILPIT_USER")
+    MAILPIT_PASSWORD: str = Field(..., env="MAILPIT_PASSWORD")
+    MAILPIT_SERVER: str = Field(..., env="MAILPIT_SERVER")
+    MAILPIT_PORT: int = Field(..., env="MAILPIT_PORT")
+
     JWT_SECRET: str = Field(..., env="JWT_SECRET")
     JWT_ALGORITHM: str = Field(..., env="JWT_ALGORITHM")
 
