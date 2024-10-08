@@ -1,6 +1,5 @@
 import uuid
 from datetime import datetime
-from typing import Optional
 
 import sqlalchemy.dialects.postgresql as pg
 from sqlmodel import Column, Field, SQLModel
@@ -11,9 +10,6 @@ class User(SQLModel, table=True):
 
     uid: uuid.UUID = Field(
         sa_column=Column(pg.UUID, nullable=False, primary_key=True, default=uuid.uuid4)
-    )
-    id: Optional[int] = Field(
-        sa_column=Column(pg.INTEGER, nullable=False, unique=True, autoincrement=True)
     )
     username: str = Field(sa_column=Column(pg.VARCHAR, nullable=False, unique=True))
     email: str = Field(sa_column=Column(pg.VARCHAR, nullable=False, unique=True))

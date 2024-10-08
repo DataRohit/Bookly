@@ -2,6 +2,7 @@ from fastapi import FastAPI
 
 from pkg.errors import register_all_errors
 from pkg.middleware import register_middleware
+from src.auth.routes import auth_router
 
 version = "v1"
 
@@ -32,3 +33,6 @@ app = FastAPI(
 
 register_all_errors(app)
 register_middleware(app)
+
+
+app.include_router(auth_router, prefix=f"{version_prefix}/auth", tags=["auth"])

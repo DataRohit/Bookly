@@ -1,8 +1,8 @@
 """create_users
 
-Revision ID: 697ddb7b2019
+Revision ID: eb61d8e38af5
 Revises: 
-Create Date: 2024-10-08 09:16:58.217768
+Create Date: 2024-10-08 09:22:21.361119
 
 """
 
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 from alembic import op
 from sqlalchemy.dialects import postgresql
 
-revision: str = "697ddb7b2019"
+revision: str = "eb61d8e38af5"
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -22,7 +22,6 @@ def upgrade() -> None:
     op.create_table(
         "users",
         sa.Column("uid", sa.UUID(), nullable=False),
-        sa.Column("id", sa.INTEGER(), autoincrement=True, nullable=False),
         sa.Column("username", sa.VARCHAR(), nullable=False),
         sa.Column("email", sa.VARCHAR(), nullable=False),
         sa.Column("first_name", sa.VARCHAR(), nullable=False),
@@ -35,7 +34,6 @@ def upgrade() -> None:
         sa.Column("updated_at", postgresql.TIMESTAMP(), nullable=False),
         sa.PrimaryKeyConstraint("uid"),
         sa.UniqueConstraint("email"),
-        sa.UniqueConstraint("id"),
         sa.UniqueConstraint("username"),
     )
 

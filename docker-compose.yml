@@ -3,8 +3,8 @@ services:
     build:
       context: .
       dockerfile: ./compose/backend/Dockerfile
-    container_name: backend
     image: backend:latest
+    container_name: backend
     ports:
       - "8000:8000"
     volumes:
@@ -13,7 +13,7 @@ services:
       - ./.envs/.backend.env
     command: /start
     networks:
-      - bookly-backend-network
+      - backend_network
     depends_on:
       postgres:
         condition: service_healthy
@@ -21,12 +21,14 @@ services:
   postgres:
     image: postgres:16
     container_name: postgres
+    ports:
+      - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     env_file:
       - ./.envs/.postgres.env
     networks:
-      - bookly-backend-network
+      - backend_network
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}" ]
       interval: 30s
@@ -35,7 +37,7 @@ services:
       timeout: 10s
 
 networks:
-  bookly-backend-network:
+  backend_network:
     driver: bridge
 
 volumes:

@@ -42,15 +42,15 @@ deps-commands: install-deps export-deps list-deps
 
 # Install dependencies from the requirements.txt file
 install-deps: $(VENV_DIR)
-	$(VENV_DIR)/bin/pip install -r $(REQ_FILE)
+	pip install -r $(REQ_FILE)
 
 # Export installed dependencies to the requirements.txt file
 export-deps: $(VENV_DIR)
-	$(VENV_DIR)/bin/pip freeze > $(REQ_FILE)
+	pip freeze > $(REQ_FILE)
 
 # List all installed dependencies
 list-deps: $(VENV_DIR)
-	$(VENV_DIR)/bin/pip freeze
+	pip freeze
 
 # Port forwarding command
 port-forward:
@@ -61,12 +61,12 @@ alembic-commands: upgrade-db downgrade-db create-migration
 
 # Create a new Alembic migration with a message
 create-migration: $(VENV_DIR)
-	$(VENV_DIR)/bin/alembic revision --autogenerate -m "$(message)"
+	alembic revision --autogenerate -m "$(message)"
 
 # Apply Alembic migrations (upgrade)
 upgrade-db: $(VENV_DIR)
-	$(VENV_DIR)/bin/alembic upgrade head
+	alembic upgrade head
 
 # Revert Alembic migrations (downgrade)
 downgrade-db: $(VENV_DIR)
-	$(VENV_DIR)/bin/alembic downgrade -1
+	alembic downgrade -1

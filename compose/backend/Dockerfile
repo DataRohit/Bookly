@@ -1,4 +1,4 @@
-FROM docker.io/python:3.12.3-slim-bookworm AS python
+FROM docker.io/python:3.12.7-bookworm AS python
 
 FROM python AS python-build-stage
 
