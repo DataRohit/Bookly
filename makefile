@@ -61,7 +61,7 @@ alembic-commands: upgrade-db downgrade-db create-migration
 
 # Create a new Alembic migration with a message
 create-migration: $(VENV_DIR)
-	$(VENV_DIR)/bin/alembic revision -m "$(message)"
+	$(VENV_DIR)/bin/alembic revision --autogenerate -m "$(message)"
 
 # Apply Alembic migrations (upgrade)
 upgrade-db: $(VENV_DIR)

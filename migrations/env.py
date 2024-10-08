@@ -2,15 +2,17 @@ from logging.config import fileConfig
 
 from alembic import context
 from sqlalchemy import engine_from_config, pool
+from sqlmodel import SQLModel
 
 from pkg.config import Config
+from src.auth.models import User
 
 config = context.config
 
 if config.config_file_name is not None:
     fileConfig(config.config_file_name, disable_existing_loggers=False)
 
-target_metadata = None
+target_metadata = SQLModel.metadata
 
 config.set_main_option("sqlalchemy.url", Config.DATABASE_URL)
 
