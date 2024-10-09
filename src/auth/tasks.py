@@ -1,9 +1,11 @@
 import asyncio
 
 import celery
+from sqlmodel.ext.asyncio.session import AsyncSession
 
+from pkg.celery_app import celery_app
 from pkg.db import get_session
-from src.auth.service import PasswordResetLogService, TokenBlackListService
+from src.auth.service import PasswordResetLogService, TokenBlackListService, UserService
 
 
 @celery.shared_task
@@ -24,3 +26,9 @@ def clear_password_reset_logs_task():
             await password_reset_log_service.clear_password_reset_logs(session)
 
     asyncio.run(async_clear_password_reset_logs())
+
+
+@celery_app.task
+async def create_user_profile_task(user_uid: str, session: AsyncSession):
+    user_service = UserService()
+    await user_service.create_user_profile(user_uid, session)

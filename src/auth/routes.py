@@ -18,6 +18,7 @@ from .schemas import (
     UserResetPasswordSchema,
 )
 from .service import PasswordResetLogService, TokenBlackListService, UserService
+from .tasks import create_user_profile_task
 from .utils import (
     decode_url_safe_token,
     generate_password_hash,
@@ -116,6 +117,8 @@ async def activate_user(
         "auth/activation_success_email.html",
         {"first_name": user.first_name},
     )
+
+    await create_user_profile_task(user_uid, session)
 
     await token_blacklist_service.blacklist_token(
         activation_token, datetime.fromtimestamp(expires_at), session

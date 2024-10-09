@@ -3,6 +3,8 @@ from datetime import datetime, timedelta
 from sqlalchemy import delete, select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
+from src.profile.models import UserProfile
+
 from .models import PasswordResetLog, TokenBlacklist, User
 from .schemas import UserCreateSchema
 from .utils import generate_password_hash
@@ -57,6 +59,16 @@ class UserService:
         await session.refresh(user)
 
         return user
+
+    async def create_user_profile(self, user_uid: str, session: AsyncSession) -> None:
+        user = await session.get(User, user_uid)
+        profile = UserProfile(
+            user_uid=user.uid,
+            avatar=f"https://api.dicebear.com/9.x/adventurer-neutral/png?seed={user.username}",
+        )
+
+        session.add(profile)
+        await session.commit()
 
 
 class TokenBlackListService:
