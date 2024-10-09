@@ -18,5 +18,3 @@ celery_app.conf.beat_schedule = {
         "schedule": timedelta(hours=6),
     },
 }
-
-celery_app.conf.timezone = "Asia/Kolkata"

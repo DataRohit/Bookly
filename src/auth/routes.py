@@ -1,7 +1,7 @@
 import json
 from datetime import datetime, timedelta
 
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, Request, status
 from fastapi.responses import JSONResponse
 from sqlmodel.ext.asyncio.session import AsyncSession
 
@@ -252,9 +252,16 @@ async def reset_password(
 
 @auth_router.post("/login", status_code=status.HTTP_200_OK)
 async def login_user(
+    request: Request,
     user_data: UserLoginSchema,
     session: AsyncSession = Depends(get_session),
 ):
+    access_token = request.cookies.get("access_token")
+    if access_token:
+        await token_blacklist_service.blacklist_token(
+            access_token, datetime.now(), session
+        )
+
     user = await user_service.get_user_by_email(user_data.email, session)
 
     if not user:
@@ -309,11 +316,83 @@ async def login_user(
 
 
 @auth_router.post("/logout", status_code=status.HTTP_200_OK)
-async def logout_user():
+async def logout_user(
+    request: Request,
+    session: AsyncSession = Depends(get_session),
+):
+    access_token = request.cookies.get("access_token")
+    if access_token:
+        await token_blacklist_service.blacklist_token(
+            access_token, datetime.now(), session
+        )
+
     response = JSONResponse(
         status_code=status.HTTP_200_OK,
         content={"message": "User logged out successfully"},
     )
-    response.delete_cookie(key="access_token")
+    response.set_cookie(
+        key="access_token",
+        value="",
+        httponly=True,
+        secure=True,
+        expires=0,
+    )
 
     return response
+
+
+@auth_router.get("/me", status_code=status.HTTP_200_OK)
+async def get_logged_in_user(
+    request: Request,
+    session: AsyncSession = Depends(get_session),
+):
+    access_token = request.cookies.get("access_token")
+
+    if not access_token:
+        return JSONResponse(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            content={"message": "Access token is missing"},
+        )
+
+    data = decode_url_safe_token(access_token)
+
+    user_uid = data.get("user_uid")
+    expires_at = data.get("expires_at")
+
+    if not user_uid or not expires_at:
+        return JSONResponse(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            content={"message": "Invalid access token"},
+        )
+
+    if datetime.now().timestamp() > expires_at:
+        response = JSONResponse(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            content={"message": "Access token expired"},
+        )
+        response.set_cookie(
+            key="access_token",
+            value="",
+            httponly=True,
+            secure=True,
+            expires=0,
+        )
+        return response
+
+    user = await user_service.get_user_by_uid(user_uid, session)
+
+    if not user:
+        return JSONResponse(
+            status_code=status.HTTP_404_NOT_FOUND,
+            content={"message": "User not found"},
+        )
+
+    return JSONResponse(
+        status_code=status.HTTP_200_OK,
+        content={
+            "message": "User found",
+            "user": UserCreateResponseSchema(
+                **json.loads(user.model_dump_json())
+            ).model_dump(),
+        },
+    )
