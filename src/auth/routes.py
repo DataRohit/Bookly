@@ -303,7 +303,17 @@ async def login_user(
         httponly=True,
         secure=True,
         expires=15 * 60,
-        samesite="lax",
     )
+
+    return response
+
+
+@auth_router.post("/logout", status_code=status.HTTP_200_OK)
+async def logout_user():
+    response = JSONResponse(
+        status_code=status.HTTP_200_OK,
+        content={"message": "User logged out successfully"},
+    )
+    response.delete_cookie(key="access_token")
 
     return response
