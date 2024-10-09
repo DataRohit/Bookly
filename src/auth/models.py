@@ -34,3 +34,31 @@ class User(SQLModel, table=True):
 
     def __repr__(self):
         return f"<User {self.username} - {self.email}>"
+
+
+class TokenBlacklist(SQLModel, table=True):
+    __tablename__ = "token_blacklist"
+
+    uid: uuid.UUID = Field(
+        sa_column=Column(pg.UUID, nullable=False, primary_key=True, default=uuid.uuid4)
+    )
+    token: str = Field(sa_column=Column(pg.VARCHAR, nullable=False, unique=True))
+    expires_at: datetime = Field(sa_column=Column(pg.TIMESTAMP, nullable=False))
+
+    def __repr__(self):
+        return f"<TokenBlacklist {self.token}>"
+
+
+class PasswordResetLog(SQLModel, table=True):
+    __tablename__ = "password_reset_log"
+
+    uid: uuid.UUID = Field(
+        sa_column=Column(pg.UUID, nullable=False, primary_key=True, default=uuid.uuid4)
+    )
+    user_email: str = Field(sa_column=Column(pg.VARCHAR, nullable=False))
+    requested_at: datetime = Field(
+        sa_column=Column(pg.TIMESTAMP, nullable=False, default=datetime.now)
+    )
+
+    def __repr__(self):
+        return f"<PasswordResetLog {self.token}>"

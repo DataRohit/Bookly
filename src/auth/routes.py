@@ -16,7 +16,7 @@ from .schemas import (
     UserForgotPasswordSchema,
     UserResetPasswordSchema,
 )
-from .service import UserService
+from .service import PasswordResetLogService, TokenBlackListService, UserService
 from .utils import (
     decode_url_safe_token,
     generate_password_hash,
@@ -24,7 +24,10 @@ from .utils import (
 )
 
 auth_router = APIRouter()
+
 user_service = UserService()
+token_blacklist_service = TokenBlackListService()
+password_reset_log_service = PasswordResetLogService()
 
 
 @auth_router.post("/register", status_code=status.HTTP_201_CREATED)
@@ -70,6 +73,15 @@ async def activate_user(
     activation_token: str,
     session: AsyncSession = Depends(get_session),
 ):
+    token_blacklisted = await token_blacklist_service.check_token_blacklist(
+        activation_token, session
+    )
+    if token_blacklisted:
+        return JSONResponse(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            content={"message": "Activation token blacklisted"},
+        )
+
     data = decode_url_safe_token(activation_token)
 
     user_uid = data.get("user_uid")
@@ -103,6 +115,10 @@ async def activate_user(
         {"first_name": user.first_name},
     )
 
+    await token_blacklist_service.blacklist_token(
+        activation_token, datetime.fromtimestamp(expires_at), session
+    )
+
     return JSONResponse(
         status_code=status.HTTP_200_OK,
         content={
@@ -119,6 +135,17 @@ async def forgot_password(
     user_data: UserForgotPasswordSchema,
     session: AsyncSession = Depends(get_session),
 ):
+    forgot_password_request_exceeded = (
+        await password_reset_log_service.check_password_reset_limit_exceeded(
+            user_data.email, session
+        )
+    )
+    if forgot_password_request_exceeded:
+        return JSONResponse(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            content={"message": "Password reset limit exceeded"},
+        )
+
     user = await user_service.get_user_by_email(user_data.email, session)
 
     if not user:
@@ -144,6 +171,8 @@ async def forgot_password(
         {"first_name": user.first_name, "password_reset_link": password_reset_link},
     )
 
+    await password_reset_log_service.log_password_reset(user.email, session)
+
     return JSONResponse(
         status_code=status.HTTP_200_OK,
         content={"message": "Password reset link sent to your email"},
@@ -158,6 +187,15 @@ async def reset_password(
     user_data: UserResetPasswordSchema,
     session: AsyncSession = Depends(get_session),
 ):
+    token_blacklisted = await token_blacklist_service.check_token_blacklist(
+        password_reset_token, session
+    )
+    if token_blacklisted:
+        return JSONResponse(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            content={"message": "Password reset token blacklisted"},
+        )
+
     data = decode_url_safe_token(password_reset_token)
 
     user_uid = data.get("user_uid")
@@ -198,6 +236,10 @@ async def reset_password(
         "Password Reset Successfully",
         "auth/reset_password_success_email.html",
         {"first_name": user.first_name},
+    )
+
+    await token_blacklist_service.blacklist_token(
+        password_reset_token, datetime.fromtimestamp(expires_at), session
     )
 
     return JSONResponse(

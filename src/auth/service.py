@@ -1,7 +1,9 @@
+from datetime import datetime, timedelta
+
 from sqlalchemy import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from .models import User
+from .models import PasswordResetLog, TokenBlacklist, User
 from .schemas import UserCreateSchema
 from .utils import generate_password_hash
 
@@ -41,6 +43,7 @@ class UserService:
         user = await session.get(User, user_uid)
         user.is_verified = True
         user.is_active = True
+        user.updated_at = datetime.now()
 
         await session.commit()
         await session.refresh(user)
@@ -51,7 +54,44 @@ class UserService:
         for field, value in user_data.items():
             setattr(user, field, value)
 
+        user.updated_at = datetime.now()
+
         await session.commit()
         await session.refresh(user)
 
         return user
+
+
+class TokenBlackListService:
+    async def blacklist_token(
+        self, token: str, expires_at: datetime, session: AsyncSession
+    ) -> None:
+        token_blacklist = TokenBlacklist(token=token, expires_at=expires_at)
+        session.add(token_blacklist)
+        await session.commit()
+
+    async def check_token_blacklist(self, token: str, session: AsyncSession) -> bool:
+        result = await session.execute(
+            select(TokenBlacklist).where(TokenBlacklist.token == token)
+        )
+        token = result.scalars().first()
+        return True if token else False
+
+
+class PasswordResetLogService:
+    async def log_password_reset(self, user_email: str, session: AsyncSession):
+        log = PasswordResetLog(user_email=user_email)
+        session.add(log)
+        await session.commit()
+
+    async def check_password_reset_limit_exceeded(
+        self, user_email: str, session: AsyncSession
+    ) -> bool:
+        result = await session.execute(
+            select(PasswordResetLog).where(
+                PasswordResetLog.user_email == user_email,
+                PasswordResetLog.requested_at >= (datetime.now() - timedelta(days=15)),
+            )
+        )
+        logs = result.scalars().all()
+        return len(logs) >= 5
