@@ -29,7 +29,9 @@ class User(SQLModel, table=True):
         sa_column=Column(pg.TIMESTAMP, nullable=False, default=datetime.now)
     )
     updated_at: datetime = Field(
-        sa_column=Column(pg.TIMESTAMP, nullable=False, default=datetime.now)
+        sa_column=Column(
+            pg.TIMESTAMP, nullable=False, default=datetime.now, onupdate=datetime.now
+        )
     )
 
     def __repr__(self):

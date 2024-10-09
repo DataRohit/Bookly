@@ -43,7 +43,6 @@ class UserService:
         user = await session.get(User, user_uid)
         user.is_verified = True
         user.is_active = True
-        user.updated_at = datetime.now()
 
         await session.commit()
         await session.refresh(user)
@@ -53,8 +52,6 @@ class UserService:
     ) -> User:
         for field, value in user_data.items():
             setattr(user, field, value)
-
-        user.updated_at = datetime.now()
 
         await session.commit()
         await session.refresh(user)

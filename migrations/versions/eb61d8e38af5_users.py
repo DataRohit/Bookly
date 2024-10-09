@@ -1,4 +1,4 @@
-"""create_users
+"""users
 
 Revision ID: eb61d8e38af5
 Revises: 

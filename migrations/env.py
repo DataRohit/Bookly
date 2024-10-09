@@ -5,7 +5,8 @@ from sqlalchemy import engine_from_config, pool
 from sqlmodel import SQLModel
 
 from pkg.config import Config
-from src.auth.models import User
+from src.auth.models import PasswordResetLog, TokenBlacklist, User
+from src.profile.models import UserProfile
 
 config = context.config
 
