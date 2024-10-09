@@ -14,6 +14,7 @@ from .schemas import (
     UserCreateResponseSchema,
     UserCreateSchema,
     UserForgotPasswordSchema,
+    UserLoginSchema,
     UserResetPasswordSchema,
 )
 from .service import PasswordResetLogService, TokenBlackListService, UserService
@@ -21,6 +22,7 @@ from .utils import (
     decode_url_safe_token,
     generate_password_hash,
     generate_url_safe_token,
+    verify_password,
 )
 
 auth_router = APIRouter()
@@ -246,3 +248,62 @@ async def reset_password(
         status_code=status.HTTP_200_OK,
         content={"message": "Password reset successfully"},
     )
+
+
+@auth_router.post("/login", status_code=status.HTTP_200_OK)
+async def login_user(
+    user_data: UserLoginSchema,
+    session: AsyncSession = Depends(get_session),
+):
+    user = await user_service.get_user_by_email(user_data.email, session)
+
+    if not user:
+        return JSONResponse(
+            status_code=status.HTTP_404_NOT_FOUND,
+            content={"message": "User not found"},
+        )
+
+    if not user.is_active:
+        return JSONResponse(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            content={"message": "User not activated"},
+        )
+
+    if not user.is_verified:
+        return JSONResponse(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            content={"message": "User not verified"},
+        )
+
+    if not verify_password(user_data.password, user.hashed_password):
+        return JSONResponse(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            content={"message": "Invalid password"},
+        )
+
+    access_token = generate_url_safe_token(
+        {
+            "user_uid": str(user.uid),
+            "expires_at": (datetime.now() + timedelta(minutes=15)).timestamp(),
+        }
+    )
+
+    response = JSONResponse(
+        status_code=status.HTTP_200_OK,
+        content={
+            "message": "User logged in successfully",
+            "user": UserCreateResponseSchema(
+                **json.loads(user.model_dump_json())
+            ).model_dump(),
+        },
+    )
+    response.set_cookie(
+        key="access_token",
+        value=access_token,
+        httponly=True,
+        secure=True,
+        expires=15 * 60,
+        samesite="lax",
+    )
+
+    return response

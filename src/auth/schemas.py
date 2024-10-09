@@ -69,3 +69,17 @@ class UserResetPasswordSchema(BaseModel):
             }
         }
     }
+
+
+class UserLoginSchema(BaseModel):
+    email: str = Field(max_length=50)
+    password: str = Field(min_length=8, max_length=50)
+
+    model_config = {
+        "json_schema_extra": {
+            "example": {
+                "email": "johndoe@example.com",
+                "password": "JohnDoe@Password123",
+            }
+        }
+    }
