@@ -49,3 +49,9 @@ class UserCreateResponseSchema(BaseModel):
             }
         }
     }
+
+
+class UserForgotPasswordSchema(BaseModel):
+    email: str = Field(max_length=50)
+
+    model_config = {"json_schema_extra": {"example": {"email": "johndoe@example.com"}}}

@@ -10,7 +10,11 @@ from pkg.db import get_session
 from pkg.errors import UserAlreadyExists
 from pkg.mail import send_email
 
-from .schemas import UserCreateResponseSchema, UserCreateSchema
+from .schemas import (
+    UserCreateResponseSchema,
+    UserCreateSchema,
+    UserForgotPasswordSchema,
+)
 from .service import UserService
 from .utils import decode_url_safe_token, generate_url_safe_token
 
@@ -102,4 +106,40 @@ async def activate_user(
                 **json.loads(user.model_dump_json())
             ).model_dump(),
         },
+    )
+
+
+@auth_router.post("/forgot-password", status_code=status.HTTP_200_OK)
+async def forgot_password(
+    user_data: UserForgotPasswordSchema,
+    session: AsyncSession = Depends(get_session),
+):
+    user = await user_service.get_user_by_email(user_data.email, session)
+
+    if not user:
+        return JSONResponse(
+            status_code=status.HTTP_404_NOT_FOUND,
+            content={"message": "User not found"},
+        )
+
+    password_reset_token = generate_url_safe_token(
+        {
+            "user_uid": str(user.uid),
+            "expires_at": (datetime.now() + timedelta(minutes=15)).timestamp(),
+        }
+    )
+    password_reset_link = (
+        f"http://{Config.DOMAIN}/api/v1/auth/reset-password/{password_reset_token}"
+    )
+
+    await send_email(
+        [user.email],
+        "Reset your password",
+        "auth/forgot_password_email.html",
+        {"first_name": user.first_name, "password_reset_link": password_reset_link},
+    )
+
+    return JSONResponse(
+        status_code=status.HTTP_200_OK,
+        content={"message": "Password reset link sent to your email"},
     )
