@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 
-from sqlalchemy import select
+from sqlalchemy import delete, select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from .models import PasswordResetLog, TokenBlacklist, User
@@ -77,6 +77,11 @@ class TokenBlackListService:
         token = result.scalars().first()
         return True if token else False
 
+    async def clear_expired_blacklisted_tokens(self, session: AsyncSession) -> None:
+        stmt = delete(TokenBlacklist).where(TokenBlacklist.expires_at < datetime.now())
+        await session.execute(stmt)
+        await session.commit()
+
 
 class PasswordResetLogService:
     async def log_password_reset(self, user_email: str, session: AsyncSession):
@@ -95,3 +100,10 @@ class PasswordResetLogService:
         )
         logs = result.scalars().all()
         return len(logs) >= 5
+
+    async def clear_password_reset_logs(self, session: AsyncSession) -> None:
+        stmt = delete(PasswordResetLog).where(
+            PasswordResetLog.requested_at < (datetime.now() - timedelta(days=15))
+        )
+        await session.execute(stmt)
+        await session.commit()
