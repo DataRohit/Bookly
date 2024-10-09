@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account Activated - Bookly</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        
+        body {
+            background-color: #f4f7fa;
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        .container {
+            width: 100%;
+            max-width: 600px;
+            margin: 40px auto;
+            background-color: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
+        .header {
+            background-color: #10b981;
+            padding-top: 32px;
+            padding-bottom: 22px;
+            text-align: center;
+        }
+        .logo {
+            height: 56px;
+            width: auto;
+        }
+        .content {
+            padding: 48px 40px;
+            padding-bottom: 20px;
+            text-align: left;
+        }
+        h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 24px;
+        }
+        p {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #4b5563;
+        }
+        a {
+            color: #10b981;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .button {
+            display: inline-block;
+            background-color: #10b981;
+            color: white;
+            padding: 14px 32px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 16px;
+            margin: 12px 0;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        .button:hover {
+            background-color: #059669;
+            transform: translateY(-2px);
+        }
+        .note {
+            background-color: #ecfdf5;
+            border-left: 4px solid #10b981;
+            padding: 16px;
+            margin-top: 26px;
+            border-radius: 0 8px 8px 0;
+        }
+        .footer {
+            background-color: #f9fafb;
+            padding: 24px 40px;
+            text-align: center;
+            font-size: 14px;
+            color: #6b7280;
+        }
+        .footer a {
+            color: #4b5563;
+        }
+        .divider {
+            height: 1px;
+            background-color: #e5e7eb;
+            margin: 32px 0;
+        }
+        @media (max-width: 600px) {
+            .container {
+                margin: 0;
+                border-radius: 0;
+            }
+            .content {
+                padding: 32px 24px;
+            }
+            .footer {
+                padding: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="https://svgshare.com/i/1BF7.svg" alt="Bookly Logo" class="logo"/>
+        </div>
+        <div class="content">
+            <h1>Account Activated Successfully, {{first_name}}!</h1>
+            <p>Great news! Your Bookly account has been successfully activated. We're excited to have you as part of our community of book enthusiasts.</p>
+            <p>You now have full access to all of Bookly's features, including:</p>
+            <ul>
+                <li>Browsing our extensive collection of books</li>
+                <li>Creating personalized reading lists</li>
+                <li>Connecting with fellow readers</li>
+                <li>Participating in book discussions and reviews</li>
+            </ul>
+        </div>
+        <div class="footer">
+            <p>&copy; 2024 Bookly - Rohit Vilas Ingole (DataRohit). All rights reserved.</p>
+            <a href="https://github.com/datarohit">Visit our GitHub</a>
+        </div>
+    </div>
+</body>
+</html>

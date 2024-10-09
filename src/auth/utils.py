@@ -19,3 +19,7 @@ def verify_password(password: str, hashed_password: str) -> bool:
 
 def generate_url_safe_token(data: dict) -> str:
     return url_safe_timed_serializer.dumps(data)
+
+
+def decode_url_safe_token(token: str) -> dict:
+    return url_safe_timed_serializer.loads(token)

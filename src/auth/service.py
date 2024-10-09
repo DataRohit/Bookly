@@ -29,9 +29,21 @@ class UserService:
         user = result.scalars().first()
         return user
 
+    async def get_user_by_uid(self, user_uid: str, session: AsyncSession) -> User:
+        user = await session.get(User, user_uid)
+        return user
+
     async def user_exists(self, email: str, session: AsyncSession) -> bool:
         user = await self.get_user_by_email(email, session)
         return True if user else False
+
+    async def activate_user(self, user_uid: str, session: AsyncSession) -> None:
+        user = await session.get(User, user_uid)
+        user.is_verified = True
+        user.is_active = True
+
+        await session.commit()
+        await session.refresh(user)
 
     async def update_user(
         self, user: User, user_data: dict, session: AsyncSession
