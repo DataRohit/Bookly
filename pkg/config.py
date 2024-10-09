@@ -22,6 +22,10 @@ class Settings(BaseSettings):
     JWT_SALT: str = Field(..., env="JWT_SALT")
     JWT_ALGORITHM: str = Field(..., env="JWT_ALGORITHM")
 
+    REDIS_URL: str = Field(..., env="REDIS_URL")
+    FLOWER_USERNAME: str = Field(..., env="FLOWER_USERNAME")
+    FLOWER_PASSWORD: str = Field(..., env="FLOWER_PASSWORD")
+
     DOMAIN: str = Field(..., env="DOMAIN")
 
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")

@@ -1,0 +1,10 @@
+#!/bin/bash
+
+
+set -o errexit
+set -o nounset
+
+
+exec watchfiles --filter python celery.__main__.main \
+    --args \
+    "-A pkg.celery_app -b \"${REDIS_URL}\" flower --basic_auth=\"${FLOWER_USERNAME}:${FLOWER_PASSWORD}\""

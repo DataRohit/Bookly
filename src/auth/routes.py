@@ -8,7 +8,7 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 from pkg.config import Config
 from pkg.db import get_session
 from pkg.errors import UserAlreadyExists
-from pkg.mail import send_email
+from pkg.tasks import send_email_task
 
 from .schemas import (
     UserCreateResponseSchema,
@@ -50,7 +50,7 @@ async def register_user(
         f"http://{Config.DOMAIN}/api/v1/auth/activate/{user_activation_token}"
     )
 
-    await send_email(
+    send_email_task.delay(
         [user.email],
         "Activate your account",
         "auth/activation_email.html",
@@ -108,7 +108,7 @@ async def activate_user(
 
     await user_service.activate_user(user_uid, session)
 
-    await send_email(
+    send_email_task.delay(
         [user.email],
         "Acount Activated Successfully",
         "auth/activation_success_email.html",
@@ -164,7 +164,7 @@ async def forgot_password(
         f"http://{Config.DOMAIN}/api/v1/auth/reset-password/{password_reset_token}"
     )
 
-    await send_email(
+    send_email_task.delay(
         [user.email],
         "Reset your password",
         "auth/forgot_password_email.html",
@@ -231,7 +231,7 @@ async def reset_password(
     await session.commit()
     await session.refresh(user)
 
-    await send_email(
+    send_email_task.delay(
         [user.email],
         "Password Reset Successfully",
         "auth/reset_password_success_email.html",

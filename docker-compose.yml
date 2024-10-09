@@ -1,5 +1,5 @@
 services:
-  backend:
+  backend: &backend
     build:
       context: .
       dockerfile: ./compose/backend/Dockerfile
@@ -48,6 +48,47 @@ services:
     networks:
       - backend_network
 
+  redis:
+    image: redis:6
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - backend_network
+
+  celeryworker:
+    <<: *backend
+    container_name: celeryworker
+    command: /start-celeryworker
+    ports: []
+    depends_on:
+      - redis
+    networks:
+      - backend_network
+
+  celerybeat:
+    <<: *backend
+    container_name: celerybeat
+    command: /start-celerybeat
+    ports: []
+    depends_on:
+      - redis
+    networks:
+      - backend_network
+
+  flower:
+    <<: *backend
+    container_name: flower
+    ports:
+      - "5555:5555"
+    command: /start-flower
+    depends_on:
+      - redis
+    networks:
+      - backend_network
+
 networks:
   backend_network:
     driver: bridge
@@ -55,3 +96,4 @@ networks:
 volumes:
   postgres_data:
   mailpit_data:
+  redis_data:
