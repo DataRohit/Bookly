@@ -55,3 +55,17 @@ class UserForgotPasswordSchema(BaseModel):
     email: str = Field(max_length=50)
 
     model_config = {"json_schema_extra": {"example": {"email": "johndoe@example.com"}}}
+
+
+class UserResetPasswordSchema(BaseModel):
+    password: str = Field(min_length=8, max_length=50)
+    confirm_password: str = Field(min_length=8, max_length=50)
+
+    model_config = {
+        "json_schema_extra": {
+            "example": {
+                "password": "JohnDoe@Password123",
+                "confirm_password": "JohnDoe@Password123",
+            }
+        }
+    }

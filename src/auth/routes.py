@@ -14,9 +14,14 @@ from .schemas import (
     UserCreateResponseSchema,
     UserCreateSchema,
     UserForgotPasswordSchema,
+    UserResetPasswordSchema,
 )
 from .service import UserService
-from .utils import decode_url_safe_token, generate_url_safe_token
+from .utils import (
+    decode_url_safe_token,
+    generate_password_hash,
+    generate_url_safe_token,
+)
 
 auth_router = APIRouter()
 user_service = UserService()
@@ -142,4 +147,60 @@ async def forgot_password(
     return JSONResponse(
         status_code=status.HTTP_200_OK,
         content={"message": "Password reset link sent to your email"},
+    )
+
+
+@auth_router.post(
+    "/reset-password/{password_reset_token}", status_code=status.HTTP_200_OK
+)
+async def reset_password(
+    password_reset_token: str,
+    user_data: UserResetPasswordSchema,
+    session: AsyncSession = Depends(get_session),
+):
+    data = decode_url_safe_token(password_reset_token)
+
+    user_uid = data.get("user_uid")
+    expires_at = data.get("expires_at")
+
+    if not user_uid or not expires_at:
+        return JSONResponse(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            content={"message": "Invalid password reset token"},
+        )
+
+    if datetime.now().timestamp() > expires_at:
+        return JSONResponse(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            content={"message": "Password reset token expired"},
+        )
+
+    user = await user_service.get_user_by_uid(user_uid, session)
+    if not user:
+        return JSONResponse(
+            status_code=status.HTTP_404_NOT_FOUND,
+            content={"message": "User not found"},
+        )
+
+    if user_data.password != user_data.confirm_password:
+        return JSONResponse(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            content={"message": "Passwords do not match"},
+        )
+
+    user.hashed_password = generate_password_hash(user_data.password)
+
+    await session.commit()
+    await session.refresh(user)
+
+    await send_email(
+        [user.email],
+        "Password Reset Successfully",
+        "auth/reset_password_success_email.html",
+        {"first_name": user.first_name},
+    )
+
+    return JSONResponse(
+        status_code=status.HTTP_200_OK,
+        content={"message": "Password reset successfully"},
     )
