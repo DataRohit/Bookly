@@ -30,6 +30,16 @@ Bookly is an innovative online platform designed for book lovers to connect and 
 - **User Profile Update**: Users can update their profile information.
 - **Avatar Image Upload**: Users can upload and image through form data to be used as avatar image.
 
+### Book Category
+
+- **Create and Update:** User can create new categories and update the categories created by them.
+- **Get and List:** Users can list all categories or get a specific category details by category name.
+
+### Book Genre
+
+- **Create and Update:** User can create new categories and update the categories created by them.
+- **Get and List:** Users can list all categories or get a specific genre details by genre name.
+
 ## Technologies Used
 
 - **Backend Framework:** FastAPI
@@ -88,6 +98,20 @@ This command will build the necessary services and start the application, includ
 
 - **Update Profile:** `PATCH /profile/update-profile`
 - **Update Avatar Image**: `PATCH /profile/update-avatar`
+
+### Book Category Endpoints
+
+- **Create Category:** `POST /books/category/create`
+- **Update Category:**  `PATCH /books/category/update/{category_uid}`
+- **Get Category By Category Name:** `GET /books/category/get/{category}`
+- **List All Categories:** `GET /books/category/list`
+
+### Book Genre Endpoints
+
+- **Create Genre:** `POST /books/genre/create`
+- **Update Genre:**  `PATCH /books/genre/update/{genre_uid}`
+- **Get Genre By Genre Name:** `GET /books/genre/get/{genre}`
+- **List All Categories:** `GET /books/genre/list`
 
 ## API Documentation
 
