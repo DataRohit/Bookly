@@ -7,8 +7,13 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 
 from pkg.config import Config
 from pkg.db import get_session
-from pkg.errors import UserAlreadyExists
 from pkg.tasks import send_email_task
+from pkg.utils import (
+    decode_url_safe_token,
+    generate_password_hash,
+    generate_url_safe_token,
+    verify_password,
+)
 
 from .schemas import (
     UserCreateResponseSchema,
@@ -19,12 +24,6 @@ from .schemas import (
 )
 from .service import PasswordResetLogService, TokenBlackListService, UserService
 from .tasks import create_user_profile_task
-from .utils import (
-    decode_url_safe_token,
-    generate_password_hash,
-    generate_url_safe_token,
-    verify_password,
-)
 
 auth_router = APIRouter()
 
@@ -39,7 +38,10 @@ async def register_user(
     session: AsyncSession = Depends(get_session),
 ):
     if await user_service.user_exists(user_data.email, session):
-        raise UserAlreadyExists
+        return JSONResponse(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            content={"message": "User with email already exists"},
+        )
 
     user = await user_service.create_user(user_data, session)
 

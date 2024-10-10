@@ -3,11 +3,11 @@ from datetime import datetime, timedelta
 from sqlalchemy import delete, select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
+from pkg.utils import generate_password_hash
 from src.profile.models import UserProfile
 
 from .models import PasswordResetLog, TokenBlacklist, User
 from .schemas import UserCreateSchema
-from .utils import generate_password_hash
 
 
 class UserService:
