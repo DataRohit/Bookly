@@ -73,7 +73,7 @@ async def update_user_avatar(
         avatar_image.content_type,
     )
 
-    file_url = f"http://{Config.MINIO_STORAGE_ENDPOINT}/{Config.MINIO_STORAGE_BUCKET}/{avatar_image_file_name}"
+    file_url = f"http://{Config.DOMAIN}/minio/storage/{Config.MINIO_STORAGE_BUCKET}/{avatar_image_file_name}"
     await user_profile_service.update_user_profile_avatar(
         user_profile, file_url, session
     )

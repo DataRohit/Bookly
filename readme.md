@@ -24,6 +24,12 @@ Bookly is an innovative online platform designed for book lovers to connect and 
 - **Token Blacklisting:** Ensures that tokens are invalidated after logout or expiration.
 - **Celery Integration for Background Tasks:** For sending emails and clearing expired tokens and logs.
 
+### Profile
+
+- **Auto User Profile Creation**: User profile is created on user verification.
+- **User Profile Update**: Users can update their profile information.
+- **Avatar Image Upload**: Users can upload and image through form data to be used as avatar image.
+
 ## Technologies Used
 
 - **Backend Framework:** FastAPI
@@ -31,6 +37,7 @@ Bookly is an innovative online platform designed for book lovers to connect and 
 - **Asynchronous ORM:** SQLModel
 - **Task Queue:** Celery
 - **Broker:** Redis
+- **Storage:** MinIO
 - **Other Libraries:** Pydantic, Alembic, etc.
 
 ## Installation
@@ -76,6 +83,11 @@ This command will build the necessary services and start the application, includ
 - **Forgot Password:** `POST /auth/forgot-password`
 - **Reset Password:** `POST /auth/reset-password/{password_reset_token}`
 - **Get Logged-in User:** `GET /auth/me`
+
+### Profile Endpoints
+
+- **Update Profile:** `PATCH /profile/update-profile`
+- **Update Avatar Image**: `PATCH /profile/update-avatar`
 
 ## API Documentation
 

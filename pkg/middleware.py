@@ -32,16 +32,12 @@ def register_middleware(app: FastAPI):
 
     app.add_middleware(
         TrustedHostMiddleware,
-        allowed_hosts=[
-            "localhost",
-            "127.0.0.1",
-            "0.0.0.0",
-        ],
+        allowed_hosts=["bookly.serveo.net", "localhost"],
     )
 
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=["*"],
+        allow_origins=["bookly.serveo.net", "localhost"],
         allow_methods=["*"],
         allow_headers=["Content-Type", "Authorization"],
         allow_credentials=True,

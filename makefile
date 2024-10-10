@@ -54,7 +54,7 @@ list-deps: $(VENV_DIR)
 
 # Port forwarding command
 port-forward:
-	ssh -R bookly:80:localhost:8000 serveo.net
+	ssh -R bookly:80:localhost:8080 serveo.net
 
 # Group Alembic related commands
 alembic-commands: upgrade-db downgrade-db create-migration

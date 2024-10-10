@@ -5,8 +5,6 @@ services:
       dockerfile: ./compose/backend/Dockerfile
     image: backend:latest
     container_name: backend
-    ports:
-      - "8000:8000"
     volumes:
       - .:/app:z
     env_file:
@@ -51,8 +49,6 @@ services:
   redis:
     image: redis:6
     container_name: redis
-    ports:
-      - "6379:6379"
     volumes:
       - redis_data:/data
     networks:
@@ -94,12 +90,27 @@ services:
     container_name: minio
     ports:
       - "9090:9090"
-      - "9000:9000"
     volumes:
       - minio_data:/data
     env_file:
       - ./.envs/.minio.env
     command: server --console-address ":9090" --address ":9000" /data
+    networks:
+      - backend_network
+
+  nginx:
+    build:
+      context: .
+      dockerfile: ./compose/nginx/Dockerfile
+    image: nginx:latest
+    container_name: nginx
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+      - minio
+    volumes:
+      - nginx_data:/var/log/nginx
     networks:
       - backend_network
 
@@ -112,3 +123,4 @@ volumes:
   mailpit_data:
   redis_data:
   minio_data:
+  nginx_data:
