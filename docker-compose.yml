@@ -89,6 +89,19 @@ services:
     networks:
       - backend_network
 
+  minio:
+    image: minio/minio:latest
+    container_name: minio
+    ports:
+      - "9090:9090"
+    volumes:
+      - minio_data:/data
+    env_file:
+      - ./.envs/.minio.env
+    command: server --console-address ":9090" --address ":9000" /data
+    networks:
+      - backend_network
+
 networks:
   backend_network:
     driver: bridge
@@ -97,3 +110,4 @@ volumes:
   postgres_data:
   mailpit_data:
   redis_data:
+  minio_data:

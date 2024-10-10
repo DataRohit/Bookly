@@ -26,6 +26,13 @@ class Settings(BaseSettings):
     FLOWER_USERNAME: str = Field(..., env="FLOWER_USERNAME")
     FLOWER_PASSWORD: str = Field(..., env="FLOWER_PASSWORD")
 
+    MINIO_ROOT_USER: str = Field(..., env="MINIO_ROOT_USER")
+    MINIO_ROOT_PASSWORD: str = Field(..., env="MINIO_ROOT_PASSWORD")
+    MINIO_STORAGE_BUCKET: str = Field(..., env="MINIO_STORAGE_BUCKET")
+    MINIO_STORAGE_ENDPOINT: str = Field(..., env="MINIO_STORAGE_ENDPOINT")
+    MINIO_ACCESS_KEY: str = Field(..., env="MINIO_ACCESS_KEY")
+    MINIO_SECRET_KEY: str = Field(..., env="MINIO_SECRET_KEY")
+
     DOMAIN: str = Field(..., env="DOMAIN")
 
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
