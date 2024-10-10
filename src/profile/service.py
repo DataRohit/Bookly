@@ -24,3 +24,11 @@ class UserProfileService:
         )
         user_profile = result.scalars().first()
         return user_profile
+
+    async def update_user_profile_avatar(
+        self, user_profile: UserProfile, user_avatar_url: str, session: AsyncSession
+    ):
+        user_profile.avatar = user_avatar_url
+        await session.commit()
+        await session.refresh(user_profile)
+        return user_profile

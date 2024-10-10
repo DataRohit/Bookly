@@ -94,6 +94,7 @@ services:
     container_name: minio
     ports:
       - "9090:9090"
+      - "9000:9000"
     volumes:
       - minio_data:/data
     env_file:
