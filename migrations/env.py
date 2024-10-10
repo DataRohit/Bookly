@@ -6,6 +6,7 @@ from sqlmodel import SQLModel
 
 from pkg.config import Config
 from src.auth.models import PasswordResetLog, TokenBlacklist, User
+from src.books.models import BookCategory
 from src.profile.models import UserProfile
 
 config = context.config

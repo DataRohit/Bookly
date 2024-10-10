@@ -2,6 +2,7 @@ from fastapi import FastAPI
 
 from pkg.middleware import register_middleware
 from src.auth.routes import auth_router
+from src.books.routes import book_category_router
 from src.profile.routes import profile_router
 
 version = "v1"
@@ -36,3 +37,8 @@ register_middleware(app)
 
 app.include_router(auth_router, prefix=f"{version_prefix}/auth", tags=["auth"])
 app.include_router(profile_router, prefix=f"{version_prefix}/profile", tags=["profile"])
+app.include_router(
+    book_category_router,
+    prefix=f"{version_prefix}/books/category",
+    tags=["book_category"],
+)
