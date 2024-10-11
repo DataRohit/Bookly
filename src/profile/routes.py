@@ -7,12 +7,12 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 
 from pkg.config import Config
 from pkg.db import get_session
+from pkg.tasks import upload_image_task
 from pkg.utils import get_current_user_uid
 from src.auth.service import UserService
 
 from .schemas import UserProfileResponseSchema, UserProfileUpdateSchema
 from .service import UserProfileService
-from .tasks import upload_user_avatar_image_task
 
 profile_router = APIRouter()
 
@@ -65,9 +65,9 @@ async def update_user_avatar(
 
     avatar_image_content = await avatar_image.read()
     avatar_image_file_extension = os.path.splitext(avatar_image.filename)[1]
-    avatar_image_file_name = f"avatars/{user_uid}{avatar_image_file_extension}"
+    avatar_image_file_name = f"user_avatars/{user_uid}{avatar_image_file_extension}"
 
-    upload_user_avatar_image_task.delay(
+    upload_image_task.delay(
         avatar_image_content,
         avatar_image_file_name,
         avatar_image.content_type,

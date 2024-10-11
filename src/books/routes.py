@@ -108,12 +108,37 @@ async def list_book_categories(session: AsyncSession = Depends(get_session)):
     )
 
 
-@book_category_router.get("/get/{category}", status_code=status.HTTP_200_OK)
+@book_category_router.get("/get/name/{category}", status_code=status.HTTP_200_OK)
 async def get_book_category_by_id(
     category: str, session: AsyncSession = Depends(get_session)
 ):
     book_category = await book_category_service.get_book_category_by_category(
         category, session
+    )
+
+    if not book_category:
+        return JSONResponse(
+            status_code=status.HTTP_404_NOT_FOUND,
+            content={"message": "Book category not found"},
+        )
+
+    return JSONResponse(
+        status_code=status.HTTP_200_OK,
+        content={
+            "message": "Book category found",
+            "book_category": BookCategoryResponseSchema(
+                **json.loads(book_category.model_dump_json())
+            ).model_dump(),
+        },
+    )
+
+
+@book_category_router.get("/get/uid/{category_uid}", status_code=status.HTTP_200_OK)
+async def get_book_category_by_uid(
+    category_uid: str, session: AsyncSession = Depends(get_session)
+):
+    book_category = await book_category_service.get_book_category_by_uid(
+        category_uid, session
     )
 
     if not book_category:
@@ -217,11 +242,34 @@ async def list_book_genres(session: AsyncSession = Depends(get_session)):
     )
 
 
-@book_genre_router.get("/get/{genre}", status_code=status.HTTP_200_OK)
+@book_genre_router.get("/get/name/{genre}", status_code=status.HTTP_200_OK)
 async def get_book_genre_by_id(
     genre: str, session: AsyncSession = Depends(get_session)
 ):
     book_genre = await book_genre_service.get_book_genre_by_genre(genre, session)
+
+    if not book_genre:
+        return JSONResponse(
+            status_code=status.HTTP_404_NOT_FOUND,
+            content={"message": "Book genre not found"},
+        )
+
+    return JSONResponse(
+        status_code=status.HTTP_200_OK,
+        content={
+            "message": "Book genre found",
+            "book_genre": BookGenreResponseSchema(
+                **json.loads(book_genre.model_dump_json())
+            ).model_dump(),
+        },
+    )
+
+
+@book_genre_router.get("/get/uid/{genre_uid}", status_code=status.HTTP_200_OK)
+async def get_book_genre_by_uid(
+    genre_uid: str, session: AsyncSession = Depends(get_session)
+):
+    book_genre = await book_genre_service.get_book_genre_by_uid(genre_uid, session)
 
     if not book_genre:
         return JSONResponse(

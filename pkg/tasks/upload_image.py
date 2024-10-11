@@ -6,9 +6,7 @@ from pkg.storage import minio_client
 
 
 @celery_app.task
-def upload_user_avatar_image_task(
-    image_content: bytes, filename: str, content_type: str
-):
+def upload_image_task(image_content: bytes, filename: str, content_type: str):
     file_data = BytesIO(image_content)
 
     minio_client.put_object(

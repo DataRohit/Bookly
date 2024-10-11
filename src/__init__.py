@@ -2,6 +2,7 @@ from fastapi import FastAPI
 
 from pkg.middleware import register_middleware
 from src.auth.routes import auth_router
+from src.authors.routes import author_router
 from src.books.routes import book_category_router, book_genre_router
 from src.profile.routes import profile_router
 
@@ -47,3 +48,4 @@ app.include_router(
     prefix=f"{version_prefix}/books/genre",
     tags=["book_genre"],
 )
+app.include_router(author_router, prefix=f"{version_prefix}/authors", tags=["authors"])
