@@ -1,7 +1,7 @@
 from sqlalchemy import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from .models import BookCategory, BookGenre
+from .models import Book, BookCategory, BookGenre
 
 
 class BookCategoryService:
@@ -92,3 +92,78 @@ class BookGenreService:
         result = await session.execute(select(BookGenre))
         book_genres = result.scalars().all()
         return book_genres
+
+
+class BookService:
+    async def create_book(self, user_uid: str, book_data: dict, session: AsyncSession):
+        book = Book(
+            title=book_data.title,
+            description=book_data.description,
+            isbn=book_data.isbn,
+            published_date=book_data.published_date,
+            page_count=book_data.page_count,
+            authors=book_data.authors,
+            categories=book_data.categories,
+            genres=book_data.genres,
+        )
+        session.add(book)
+        await session.commit()
+        await session.refresh(book)
+
+        return book
+
+    async def update_book(self, book: Book, book_data: dict, session: AsyncSession):
+        for field, value in book_data.items():
+            setattr(book, field, value)
+
+        await session.commit()
+        await session.refresh(book)
+
+        return book
+
+    async def get_book_by_uid(self, uid: str, session: AsyncSession):
+        result = await session.execute(select(Book).where(Book.uid == uid))
+        book = result.scalars().first()
+        return book
+
+    async def get_book_by_isbn(self, isbn: str, session: AsyncSession):
+        result = await session.execute(select(Book).where(Book.isbn == isbn))
+        book = result.scalars().first()
+        return book
+
+    async def get_book_by_title(self, title: str, session: AsyncSession):
+        result = await session.execute(select(Book).where(Book.title == title))
+        book = result.scalars().first()
+        return book
+
+    async def list_books(self, session: AsyncSession):
+        result = await session.execute(select(Book))
+        books = result.scalars().all()
+        return books
+
+    async def list_books_by_category(self, category: str, session: AsyncSession):
+        result = await session.execute(
+            select(Book).where(Book.categories.contains(category))
+        )
+        books = result.scalars().all()
+        return books
+
+    async def list_books_by_genre(self, genre: str, session: AsyncSession):
+        result = await session.execute(select(Book).where(Book.genres.contains(genre)))
+        books = result.scalars().all()
+        return books
+
+    async def list_books_by_author(self, author: str, session: AsyncSession):
+        result = await session.execute(
+            select(Book).where(Book.authors.contains(author))
+        )
+        books = result.scalars().all()
+        return books
+
+    async def update_book_image(
+        self, book: Book, image_url: str, session: AsyncSession
+    ):
+        book.images.append(image_url)
+        await session.commit()
+        await session.refresh(book)
+        return book
