@@ -1,4 +1,4 @@
-# Bookly
+# Bookly FastAPI Backend
 
 Bookly is an innovative online platform designed for book lovers to connect and share their personal collections. Users can easily list the novels and books they own, making them available for others to purchase or borrow. Whether you’re looking to clear space on your bookshelf, discover new reads, or lend a hand to fellow readers, Bookly creates a community-driven marketplace for exchanging books. With a simple and user-friendly interface, Bookly makes it effortless to explore a wide variety of titles, fostering a sustainable and connected book-sharing experience.
 
