@@ -44,8 +44,10 @@ class BookCategoryService:
         book_category = result.scalars().first()
         return book_category
 
-    async def list_book_categories(self, session: AsyncSession):
-        result = await session.execute(select(BookCategory))
+    async def list_book_categories(self, page: int, session: AsyncSession):
+        result = await session.execute(
+            select(BookCategory).offset((page - 1) * 10).limit(10)
+        )
         book_categories = result.scalars().all()
         return book_categories
 
@@ -88,8 +90,10 @@ class BookGenreService:
         book_genre = result.scalars().first()
         return book_genre
 
-    async def list_book_genres(self, session: AsyncSession):
-        result = await session.execute(select(BookGenre))
+    async def list_book_genres(self, page: int, session: AsyncSession):
+        result = await session.execute(
+            select(BookGenre).offset((page - 1) * 10).limit(10)
+        )
         book_genres = result.scalars().all()
         return book_genres
 
@@ -136,26 +140,38 @@ class BookService:
         book = result.scalars().first()
         return book
 
-    async def list_books(self, session: AsyncSession):
-        result = await session.execute(select(Book))
+    async def list_books(self, page: int, session: AsyncSession):
+        result = await session.execute(select(Book).offset((page - 1) * 10).limit(10))
         books = result.scalars().all()
         return books
 
-    async def list_books_by_category(self, category: str, session: AsyncSession):
+    async def list_books_by_category(
+        self, category: str, page: int, session: AsyncSession
+    ):
         result = await session.execute(
-            select(Book).where(Book.categories.contains(category))
+            select(Book).where(
+                Book.categories.contains(category).offset((page - 1) * 10).limit(10)
+            )
         )
         books = result.scalars().all()
         return books
 
-    async def list_books_by_genre(self, genre: str, session: AsyncSession):
-        result = await session.execute(select(Book).where(Book.genres.contains(genre)))
+    async def list_books_by_genre(self, genre: str, page: int, session: AsyncSession):
+        result = await session.execute(
+            select(Book)
+            .where(Book.genres.contains(genre))
+            .offset((page - 1) * 10)
+            .limit(10)
+        )
         books = result.scalars().all()
         return books
 
-    async def list_books_by_author(self, author: str, session: AsyncSession):
+    async def list_books_by_author(self, author: str, page: int, session: AsyncSession):
         result = await session.execute(
-            select(Book).where(Book.authors.contains(author))
+            select(Book)
+            .where(Book.authors.contains(author))
+            .offset((page - 1) * 10)
+            .limit(10)
         )
         books = result.scalars().all()
         return books

@@ -134,8 +134,10 @@ async def update_author_profile_image(
 
 
 @author_router.get("/list", status_code=status.HTTP_200_OK)
-async def list_authors(session: AsyncSession = Depends(get_session)):
-    authors = await author_service.list_authors(session)
+async def list_authors(request: Request, session: AsyncSession = Depends(get_session)):
+    page = int(request.query_params.get("page", 1))
+
+    authors = await author_service.list_authors(page, session)
 
     return JSONResponse(
         status_code=status.HTTP_200_OK,
@@ -153,9 +155,13 @@ async def list_authors(session: AsyncSession = Depends(get_session)):
 
 @author_router.get("/list/{nationality}", status_code=status.HTTP_200_OK)
 async def list_authors_by_nationality(
-    nationality: str, session: AsyncSession = Depends(get_session)
+    request: Request, nationality: str, session: AsyncSession = Depends(get_session)
 ):
-    authors = await author_service.list_authors_by_nationality(nationality, session)
+    page = int(request.query_params.get("page", 1))
+
+    authors = await author_service.list_authors_by_nationality(
+        nationality, page, session
+    )
 
     return JSONResponse(
         status_code=status.HTTP_200_OK,

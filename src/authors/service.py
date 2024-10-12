@@ -75,15 +75,18 @@ class AuthorService:
         return author
 
     async def list_authors_by_nationality(
-        self, nationality: str, session: AsyncSession
+        self, nationality: str, page: int, session: AsyncSession
     ):
         result = await session.execute(
-            select(Author).where(Author.nationality == nationality)
+            select(Author)
+            .where(Author.nationality == nationality)
+            .offset((page - 1) * 10)
+            .limit(10)
         )
         authors = result.scalars().all()
         return authors
 
-    async def list_authors(self, session: AsyncSession):
-        result = await session.execute(select(Author))
+    async def list_authors(self, page: int, session: AsyncSession):
+        result = await session.execute(select(Author).offset((page - 1) * 10).limit(10))
         authors = result.scalars().all()
         return authors

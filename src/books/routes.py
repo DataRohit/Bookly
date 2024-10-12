@@ -98,8 +98,12 @@ async def update_book_category(
 
 
 @book_category_router.get("/list", status_code=status.HTTP_200_OK)
-async def list_book_categories(session: AsyncSession = Depends(get_session)):
-    book_categories = await book_category_service.list_book_categories(session)
+async def list_book_categories(
+    request: Request, session: AsyncSession = Depends(get_session)
+):
+    page = int(request.query_params.get("page", 1))
+
+    book_categories = await book_category_service.list_book_categories(page, session)
 
     return JSONResponse(
         status_code=status.HTTP_200_OK,
@@ -232,8 +236,12 @@ async def update_book_genre(
 
 
 @book_genre_router.get("/list", status_code=status.HTTP_200_OK)
-async def list_book_genres(session: AsyncSession = Depends(get_session)):
-    book_genres = await book_genre_service.list_book_genres(session)
+async def list_book_genres(
+    request: Request, session: AsyncSession = Depends(get_session)
+):
+    page = int(request.query_params.get("page", 1))
+
+    book_genres = await book_genre_service.list_book_genres(page, session)
 
     return JSONResponse(
         status_code=status.HTTP_200_OK,
@@ -363,8 +371,10 @@ async def update_book(
 
 
 @book_router.get("/list", status_code=status.HTTP_200_OK)
-async def list_books(session: AsyncSession = Depends(get_session)):
-    books = await book_service.list_books(session)
+async def list_books(request: Request, session: AsyncSession = Depends(get_session)):
+    page = int(request.query_params.get("page", 1))
+
+    books = await book_service.list_books(page, session)
 
     return JSONResponse(
         status_code=status.HTTP_200_OK,
@@ -443,9 +453,11 @@ async def get_book_by_title(title: str, session: AsyncSession = Depends(get_sess
 
 @book_router.get("/list/category/{category}", status_code=status.HTTP_200_OK)
 async def list_books_by_category(
-    category: str, session: AsyncSession = Depends(get_session)
+    request: Request, category: str, session: AsyncSession = Depends(get_session)
 ):
-    books = await book_service.list_books_by_category(category, session)
+    page = int(request.query_params.get("page", 1))
+
+    books = await book_service.list_books_by_category(category, page, session)
 
     return JSONResponse(
         status_code=status.HTTP_200_OK,
@@ -460,8 +472,12 @@ async def list_books_by_category(
 
 
 @book_router.get("/list/genre/{genre}", status_code=status.HTTP_200_OK)
-async def list_books_by_genre(genre: str, session: AsyncSession = Depends(get_session)):
-    books = await book_service.list_books_by_genre(genre, session)
+async def list_books_by_genre(
+    request: Request, genre: str, session: AsyncSession = Depends(get_session)
+):
+    page = int(request.query_params.get("page", 1))
+
+    books = await book_service.list_books_by_genre(genre, page, session)
 
     return JSONResponse(
         status_code=status.HTTP_200_OK,
@@ -477,9 +493,11 @@ async def list_books_by_genre(genre: str, session: AsyncSession = Depends(get_se
 
 @book_router.get("/list/author/{author}", status_code=status.HTTP_200_OK)
 async def list_books_by_author(
-    author: str, session: AsyncSession = Depends(get_session)
+    request: Request, author: str, session: AsyncSession = Depends(get_session)
 ):
-    books = await book_service.list_books_by_author(author, session)
+    page = int(request.query_params.get("page", 1))
+
+    books = await book_service.list_books_by_author(author, page, session)
 
     return JSONResponse(
         status_code=status.HTTP_200_OK,
