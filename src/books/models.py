@@ -45,3 +45,24 @@ class BookGenre(SQLModel, table=True):
             pg.TIMESTAMP, nullable=False, default=datetime.now, onupdate=datetime.now
         )
     )
+
+
+class Book(SQLModel, table=True):
+    __tablename__ = "books"
+
+    uid: uuid.UUID = Field(
+        sa_column=Column(pg.UUID, nullable=False, primary_key=True, default=uuid.uuid4)
+    )
+    title: str = Field(sa_column=Column(pg.VARCHAR, nullable=False))
+    description: str = Field(sa_column=Column(pg.TEXT, nullable=False))
+    isbn: str = Field(sa_column=Column(pg.VARCHAR, nullable=False, unique=True))
+    published_date: datetime = Field(sa_column=Column(pg.DATE, nullable=False))
+    page_count: int = Field(sa_column=Column(pg.INTEGER, nullable=False))
+    authors: list[uuid.UUID] = Field(
+        sa_column=Column(pg.ARRAY(pg.UUID), nullable=False)
+    )
+    categories: list[uuid.UUID] = Field(
+        sa_column=Column(pg.ARRAY(pg.UUID), nullable=False)
+    )
+    genres: list[uuid.UUID] = Field(sa_column=Column(pg.ARRAY(pg.UUID), nullable=False))
+    images: list[uuid.UUID] = Field(sa_column=Column(pg.ARRAY(pg.UUID), nullable=False))
