@@ -40,6 +40,19 @@ Bookly is an innovative online platform designed for book lovers to connect and 
 - **Create and Update:** User can create new categories and update the categories created by them.
 - **Get and List:** Users can list all categories or get a specific genre details by genre name.
 
+### Book
+
+- **Create Book:** Users can submit a book for sharing, including details such as title, author, description, category and genre.
+- **Update Book:** Users can modify existing book details, including the description and other attributes.
+- **List Books:** Users can view a comprehensive list of all books posted by all users in a user-friendly format.
+- **Get Book By ISBN:** Users can retrieve a book's details by entering its unique ISBN number for precise identification.
+- **Get Book By UID:** Users can access specific book information using the unique identifier (UID) assigned to each book.
+- **Get Book By Title:** Users can search for books by entering the title for quick access to relevant titles.
+- **List Books by Category:** Users can browse books organized by predefined categories for easier navigation.
+- **List Books by Genre:** Users can explore books categorized by genre, making it simple to find specific types of literature.
+- **List Books by Author:** Users can filter and view books authored by a specific individual, streamlining the search for fans.
+- **Update Book Images:** Users can upload or replace images for a book, with a maximum limit of five images per book.
+
 ## Technologies Used
 
 - **Backend Framework:** FastAPI
@@ -112,6 +125,19 @@ This command will build the necessary services and start the application, includ
 - **Update Genre:**  `PATCH /books/genre/update/{genre_uid}`
 - **Get Genre By Genre Name:** `GET /books/genre/get/{genre}`
 - **List All Categories:** `GET /books/genre/list`
+
+### Book Endpoints
+
+- **Create Book:** `POST /books/create`
+- **Update Book:** `PATCH /books/update/{book_uid}`
+- **List Books:** `GET /books/list`
+- **Get Book By ISBN:** `GET /books/get/isbn/{isbn}`
+- **Get Book By UID:** `GET /books/get/uid/{book_uid}`
+- **Get Book By Title:** `GET /books/get/title/{title}`
+- **List Books by Category:** `GET /books/list/category/{category}`
+- **List Books by Genre:** `GET /books/list/genre/{genre}`
+- **List Books by Author:** `GET /books/list/author/{author}`
+- **Update Book Images:** `PATCH /update/images/{book_uid}`
 
 ## API Documentation
 
